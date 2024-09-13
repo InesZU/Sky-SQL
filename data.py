@@ -1,8 +1,13 @@
-from sqlalchemy import create_engine, text
 import sys
+from sqlalchemy import create_engine, text
 
 
 class FlightData:
+    """
+    The FlightData class is a Data Access Layer (DAL) object that provides an
+    interface to the flight data in the SQLITE database. When the object is created,
+    the class forms connection to the sqlite database file.
+    """
     def __init__(self, db_uri):
         """
         Initialize the connection to the database.
