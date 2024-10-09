@@ -58,11 +58,15 @@ class FlightData:
         Fetch delayed flights by airline.
         """
         QUERY_DELAYED_FLIGHTS_BY_AIRLINE = """
-        SELECT flights.ID, flights.ORIGIN_AIRPORT, flights.DESTINATION_AIRPORT, 
-               flights.DEPARTURE_DELAY AS DELAY, airlines.AIRLINE
-        FROM flights
-        JOIN airlines ON flights.AIRLINE = airlines.ID
-        WHERE airlines.AIRLINE LIKE :airline_name AND flights.DEPARTURE_DELAY > 20
+            SELECT flights.ID, flights.ORIGIN_AIRPORT, flights.DESTINATION_AIRPORT, 
+                   flights.DEPARTURE_DELAY AS DELAY, airlines.AIRLINE
+            FROM flights
+            JOIN airlines ON flights.AIRLINE = airlines.ID
+            WHERE airlines.AIRLINE LIKE :airline_name 
+              AND flights.DEPARTURE_DELAY IS NOT NULL
+              AND flights.DEPARTURE_DELAY > 20
+            ORDER BY DELAY DESC
+            LIMIT 10
         """
         params = {'airline_name': f'%{airline_name}%'}
         return self._execute_query(QUERY_DELAYED_FLIGHTS_BY_AIRLINE, params)
@@ -76,8 +80,11 @@ class FlightData:
                flights.DEPARTURE_DELAY AS DELAY, airlines.AIRLINE
         FROM flights
         JOIN airlines ON flights.AIRLINE = airlines.ID
-        WHERE flights.ORIGIN_AIRPORT = :IATA_code AND flights.DEPARTURE_DELAY > 20
-        AND flights.DEPARTURE_DELAY > 0
+        WHERE flights.ORIGIN_AIRPORT = :IATA_code 
+            AND flights.DEPARTURE_DELAY IS NOT NULL
+            AND flights.DEPARTURE_DELAY > 20
+        ORDER BY DELAY DESC
+        LIMIT 10
         """
         params = {'IATA_code': airport_code}
         return self._execute_query(QUERY_DELAYED_FLIGHTS_BY_AIRPORT, params)
